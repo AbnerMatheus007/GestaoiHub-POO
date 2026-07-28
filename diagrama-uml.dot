@@ -1,0 +1,45 @@
+digraph InfinitHubUML {
+    graph [fontname="Helvetica", rankdir=TB, splines=polyline, nodesep=0.6, ranksep=0.9, bgcolor="white"];
+    node [shape=record, fontname="Helvetica", fontsize=10, margin="0.12,0.10"];
+    edge [fontname="Helvetica", fontsize=9];
+
+    Interface [label="{«interface»\nSistemaInfinitHub|+ cadastrarProduto(produto)\l+ removerProduto(id)\l+ pesquisarProdutoPorId(id)\l+ pesquisarProdutosPorNome(nome)\l+ pesquisarProdutosPorCategoria(categoria)\l+ listarProdutosComEstoqueDisponivel()\l+ listarNomesDosProdutos()\l+ cadastrarCliente(cliente)\l+ removerCliente(id)\l+ pesquisarClientePorId(id)\l+ pesquisarClientesPorNome(nome)\l+ cadastrarVendedor(vendedor)\l+ removerVendedor(id)\l+ pesquisarVendedorPorId(id)\l+ pesquisarVendedorPorNome(nome)\l+ cadastrarPedido(pedido)\l+ removerPedido(id)\l+ pesquisarPedidosPorCliente(id)\l+ listarPedidosPorVendedor(id)\l+ listarPedidosPorStatus(status)\l+ calcularTotalVendidoPorVendedor(id)\l+ salvarDados()\l+ recuperarDados()\l}"];
+
+    Impl [label="{InfinitHubEcommerce|- produtos: Map\<String,Produto\>\l- clientes: Map\<String,Cliente\>\l- vendedores: Map\<String,Vendedor\>\l- pedidos: Map\<String,Pedido\>\l- gravadorDeDados: GravadorDeDados\l|(implementa todos os métodos\nde SistemaInfinitHub, usando\nStreams em pesquisas/cálculos)\l}"];
+
+    Gravador [label="{GravadorDeDados|- SEPARADOR: String\l|+ salvarProdutos(produtos)\l+ recuperarProdutos()\l+ salvarClientes(clientes)\l+ recuperarClientes()\l+ salvarVendedores(vendedores)\l+ recuperarVendedores()\l+ salvarPedidos(pedidos)\l+ recuperarPedidos(...)\l(métodos lançam IOException)\l}"];
+
+    Pessoa [label="{«abstract»\nPessoa|# id: String\l# nome: String\l# cpf: String\l|+ getters/setters\l}"];
+
+    Cliente [label="{Cliente|- telefone: String\l- email: String\l- endereco: String\l}"];
+
+    Vendedor [label="{Vendedor|- percentualComissao: double\l}"];
+
+    Produto [label="{Produto|- id: String\l- nome: String\l- categoria: CategoriaProduto\l- preco: double\l- quantidadeEmEstoque: int\l|+ possuiEstoqueDisponivel(qtd)\l+ baixarEstoque(qtd)\l+ reporEstoque(qtd)\l}"];
+
+    ItemPedido [label="{ItemPedido|- produto: Produto\l- quantidade: int\l|+ getSubtotal()\l}"];
+
+    Pedido [label="{Pedido|- id: String\l- cliente: Cliente\l- vendedor: Vendedor\l- itens: List\<ItemPedido\>\l- dataPedido: LocalDate\l- status: StatusPedido\l|+ getValorTotal()\l}"];
+
+    CategoriaProduto [label="{«enumeration»\nCategoriaProduto|PERIFERICO\lELETRONICO\lCOMPONENTE\lACESSORIO\lAUDIO\l}"];
+
+    StatusPedido [label="{«enumeration»\nStatusPedido|AGUARDANDO_PAGAMENTO\lPAGO\lENVIADO\lENTREGUE\lCANCELADO\l}"];
+
+    Excecoes [label="{«exceptions»|ClienteNaoEncontradoException\lVendedorNaoEncontradoException\lProdutoNaoEncontradoException\lPedidoNaoEncontradoException\lEstoqueInsuficienteException\l}", shape=note, fontsize=9];
+
+    Impl -> Interface [arrowhead=empty, style=dashed, label="realiza"];
+    Cliente -> Pessoa [arrowhead=empty];
+    Vendedor -> Pessoa [arrowhead=empty];
+    Impl -> Gravador [arrowhead=vee, style=dashed, label="usa"];
+    Impl -> Produto [arrowhead=diamond, label="0..*", dir=back];
+    Impl -> Cliente [arrowhead=diamond, label="0..*", dir=back];
+    Impl -> Vendedor [arrowhead=diamond, label="0..*", dir=back];
+    Impl -> Pedido [arrowhead=diamond, label="0..*", dir=back];
+    Pedido -> Cliente [arrowhead=vee, label="1"];
+    Pedido -> Vendedor [arrowhead=vee, label="1"];
+    Pedido -> ItemPedido [arrowhead=diamond, label="1..*"];
+    ItemPedido -> Produto [arrowhead=vee, label="1"];
+    Produto -> CategoriaProduto [arrowhead=vee, style=dashed];
+    Pedido -> StatusPedido [arrowhead=vee, style=dashed];
+    Impl -> Excecoes [style=dotted, arrowhead=none];
+}
