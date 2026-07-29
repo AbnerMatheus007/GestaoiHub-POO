@@ -1,5 +1,6 @@
 package ui;
 
+import java.util.Map;
 import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -184,18 +185,35 @@ public class TelaPrincipal extends JFrame {
     }
 
     private void realizarNovoPedido() {
-        List<Produto> disponiveis = sistema.listarProdutosComEstoqueDisponivel();
-        if (disponiveis.isEmpty()) {
+        List<Produto> produtosOriginais = sistema.listarProdutosComEstoqueDisponivel();
+        if (produtosOriginais.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Não há produtos com estoque disponível.");
             return;
+        }
+
+        // Criamos um controle de estoque temporário apenas para esta janela
+        // Nome do Produto -> Quantidade Disponível
+        Map<String, Integer> estoqueTemporario = new java.util.HashMap<>();
+        for (Produto p : produtosOriginais) {
+            estoqueTemporario.put(p.getNome(), p.getQuantidadeEmEstoque());
         }
 
         List<ItemPedido> itensDoPedido = new ArrayList<>();
         boolean continuarAdicionando = true;
 
         while (continuarAdicionando) {
-            String[] nomes = disponiveis.stream()
-                    .map(p -> p.getNome() + " (Disponível: " + p.getQuantidadeEmEstoque() + ")")
+            // Filtramos para mostrar apenas o que ainda tem estoque no nosso controle temporário
+            List<Produto> aindaDisponiveis = produtosOriginais.stream()
+                    .filter(p -> estoqueTemporario.get(p.getNome()) > 0)
+                    .collect(java.util.stream.Collectors.toList());
+
+            if (aindaDisponiveis.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Todos os itens do estoque foram adicionados ao carrinho!");
+                break;
+            }
+
+            String[] nomes = aindaDisponiveis.stream()
+                    .map(p -> p.getNome() + " (Disponível: " + estoqueTemporario.get(p.getNome()) + ")")
                     .toArray(String[]::new);
 
             JComboBox<String> comboProdutos = new JComboBox<>(nomes);
@@ -207,52 +225,54 @@ public class TelaPrincipal extends JFrame {
             painel.add(new JLabel("Quantidade:"));
             painel.add(txtQtd);
 
-            int result = JOptionPane.showConfirmDialog(this, painel, "Adicionar Item ao Pedido", JOptionPane.OK_CANCEL_OPTION);
+            int result = JOptionPane.showConfirmDialog(this, painel, "Adicionar ao Carrinho", JOptionPane.OK_CANCEL_OPTION);
 
             if (result == JOptionPane.OK_OPTION) {
                 try {
-                    int index = comboProdutos.getSelectedIndex();
-                    Produto pSelecionado = disponiveis.get(index);
-                    int qtd = Integer.parseInt(txtQtd.getText());
+                    Produto pOriginal = aindaDisponiveis.get(comboProdutos.getSelectedIndex());
+                    int qtdPedida = Integer.parseInt(txtQtd.getText());
+                    int qtdDisponivel = estoqueTemporario.get(pOriginal.getNome());
 
-                    if (qtd > pSelecionado.getQuantidadeEmEstoque()) {
-                        JOptionPane.showMessageDialog(this, "Quantidade superior ao estoque disponível!");
+                    if (qtdPedida > qtdDisponivel) {
+                        JOptionPane.showMessageDialog(this, "Quantidade superior ao disponível! (Máximo: " + qtdDisponivel + ")");
                         continue;
                     }
 
-                    itensDoPedido.add(new ItemPedido(pSelecionado, qtd));
+                    // Atualiza apenas o nosso controle temporário
+                    estoqueTemporario.put(pOriginal.getNome(), qtdDisponivel - qtdPedida);
 
-                    int resposta = JOptionPane.showConfirmDialog(this, "Deseja adicionar outro produto a este mesmo pedido?",
-                            "Carrinho de Compras", JOptionPane.YES_NO_OPTION);
+                    // Adiciona à lista do pedido (usando o objeto original e a quantidade pedida)
+                    itensDoPedido.add(new ItemPedido(pOriginal, qtdPedida));
 
+                    int resposta = JOptionPane.showConfirmDialog(this, "Deseja adicionar outro produto?",
+                            "Carrinho", JOptionPane.YES_NO_OPTION);
                     continuarAdicionando = (resposta == JOptionPane.YES_OPTION);
 
                 } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(this, "Quantidade inválida!");
+                    JOptionPane.showMessageDialog(this, "Por favor, insira um número válido.");
                 }
             } else {
-                continuarAdicionando = false;
+                // Se cancelar, simplesmente limpamos a lista e saímos.
+                // Os objetos originais nunca foram mexidos!
+                itensDoPedido.clear();
+                break;
             }
         }
 
         if (!itensDoPedido.isEmpty()) {
             try {
                 Pedido pedido = new Pedido(itensDoPedido);
-                sistema.cadastrarPedido(pedido);
+                sistema.cadastrarPedido(pedido); // Aqui sim o estoque real é baixado
 
-                areaSaida.append("\nPEDIDO MULTI-ITENS REALIZADO: " + pedido.getCodigo());
-                areaSaida.append("\nItens vendidos:");
-                for (ItemPedido item : itensDoPedido) {
-                    areaSaida.append("\n - " + item.getQuantidade() + "x " + item.getProduto().getNome());
-                }
-                areaSaida.append("\nValor Total: R$ " + String.format("%.2f", pedido.getValorTotal()) + "\n");
-
+                areaSaida.append("\n✅ VENDA FINALIZADA: " + pedido.getCodigo());
+                areaSaida.append("\n💰 Total: R$ " + String.format("%.2f", pedido.getValorTotal()) + "\n");
                 atualizarSaldoLabel();
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "Erro ao finalizar pedido: " + ex.getMessage());
+                JOptionPane.showMessageDialog(this, "Erro ao finalizar: " + ex.getMessage());
             }
         }
     }
+
 
     private void listarPedidos() {
         List<Pedido> pedidos = sistema.listarPedidosPorStatus(StatusPedido.PAGO);
