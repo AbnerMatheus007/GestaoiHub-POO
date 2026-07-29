@@ -3,66 +3,36 @@ package modelo;
 import java.util.Objects;
 
 public class Produto {
-
     private String nome;
     private CategoriaProduto categoria;
-    private double preco;
+    private double precoVenda;
+    private double precoCusto; // Novo campo
     private int quantidadeEmEstoque;
 
-    public Produto(String nome, CategoriaProduto categoria, double preco, int quantidadeEmEstoque) {
+    public Produto(String nome, CategoriaProduto categoria, double precoVenda, double precoCusto, int quantidadeEmEstoque) {
         this.nome = nome;
         this.categoria = categoria;
-        this.preco = preco;
+        this.precoVenda = precoVenda;
+        this.precoCusto = precoCusto;
         this.quantidadeEmEstoque = quantidadeEmEstoque;
     }
 
-    public String getNome() {
-        return nome;
-    }
+    // Getters e Setters
+    public String getNome() { return nome; }
+    public double getPrecoVenda() { return precoVenda; }
+    public double getPrecoCusto() { return precoCusto; }
+    public int getQuantidadeEmEstoque() { return quantidadeEmEstoque; }
+    public CategoriaProduto getCategoria() { return categoria; }
 
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public CategoriaProduto getCategoria() {
-        return categoria;
-    }
-
-    public void setCategoria(CategoriaProduto categoria) {
-        this.categoria = categoria;
-    }
-
-    public double getPreco() {
-        return preco;
-    }
-
-    public void setPreco(double preco) {
-        this.preco = preco;
-    }
-
-    public int getQuantidadeEmEstoque() {
-        return quantidadeEmEstoque;
-    }
-
-    public void setQuantidadeEmEstoque(int quantidadeEmEstoque) {
-        this.quantidadeEmEstoque = quantidadeEmEstoque;
-    }
-
-    public boolean possuiEstoqueDisponivel(int quantidade) {
-        return quantidadeEmEstoque >= quantidade;
-    }
-
-    public void baixarEstoque(int quantidade) {
-        this.quantidadeEmEstoque -= quantidade;
-    }
-
-    public void reporEstoque(int quantidade) {
-        this.quantidadeEmEstoque += quantidade;
-    }
+    public boolean possuiEstoqueDisponivel(int quantidade) { return quantidadeEmEstoque >= quantidade; }
+    public void baixarEstoque(int quantidade) { this.quantidadeEmEstoque -= quantidade; }
+    public void reporEstoque(int quantidade) { this.quantidadeEmEstoque += quantidade; }
+    public void setPrecoCusto(double precoCusto) { this.precoCusto = precoCusto; }
 
     @Override
     public String toString() {
-        return String.format("%s (%s) - R$ %.2f [Estoque: %d]", nome, categoria, preco, quantidadeEmEstoque);
+        return String.format("%s (%s) | Venda: R$ %.2f | Custo: R$ %.2f | Est: %d",
+                nome, categoria, precoVenda, precoCusto, quantidadeEmEstoque);
     }
 
     @Override
@@ -74,7 +44,5 @@ public class Produto {
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(nome.toLowerCase());
-    }
+    public int hashCode() { return Objects.hash(nome.toLowerCase()); }
 }

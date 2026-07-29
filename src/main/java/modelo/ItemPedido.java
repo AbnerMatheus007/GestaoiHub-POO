@@ -30,7 +30,7 @@ public class ItemPedido {
     }
 
     public double getSubtotal() {
-        return produto.getPreco() * quantidade;
+        return produto.getPrecoVenda() * quantidade;
     }
 
     @Override

@@ -123,21 +123,27 @@ public class TelaPrincipal extends JFrame {
     private void cadastrarProduto() {
         String nome = JOptionPane.showInputDialog(this, "Nome do Produto:");
         if (nome == null || nome.isBlank()) return;
-        
+
         String[] categorias = {"PERIFERICO", "ELETRONICO", "COMPONENTE", "ACESSORIO", "AUDIO"};
-        String categoriaStr = (String) JOptionPane.showInputDialog(this, "Selecione a Categoria:", "Categoria", 
-                                JOptionPane.QUESTION_MESSAGE, null, categorias, categorias[0]);
-        
-        String precoStr = JOptionPane.showInputDialog(this, "Preço de Venda (R$):");
+        String categoriaStr = (String) JOptionPane.showInputDialog(this, "Selecione a Categoria:", "Categoria",
+                JOptionPane.QUESTION_MESSAGE, null, categorias, categorias[0]);
+
+        String precoVendaStr = JOptionPane.showInputDialog(this, "Preço de Venda (R$):");
+        String precoCustoStr = JOptionPane.showInputDialog(this, "Preço de Custo/Compra (R$):"); // Nova pergunta
         String estoqueStr = JOptionPane.showInputDialog(this, "Estoque Inicial:");
-        
+
         try {
-            double preco = Double.parseDouble(precoStr);
+            double precoVenda = Double.parseDouble(precoVendaStr);
+            double precoCusto = Double.parseDouble(precoCustoStr);
             int estoque = Integer.parseInt(estoqueStr);
-            sistema.cadastrarProduto(new Produto(nome, CategoriaProduto.valueOf(categoriaStr), preco, estoque));
-            areaSaida.append("Produto '" + nome + "' adicionado ao catálogo.\n");
+
+            // Passa os dois preços para o novo construtor do Produto
+            sistema.cadastrarProduto(new Produto(nome, CategoriaProduto.valueOf(categoriaStr), precoVenda, precoCusto, estoque));
+
+            areaSaida.append("Produto '" + nome + "' cadastrado e investimento descontado do saldo.\n");
+            atualizarSaldoLabel();
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Dados inválidos. Tente novamente.");
+            JOptionPane.showMessageDialog(this, "Erro nos dados: " + ex.getMessage());
         }
     }
 
@@ -180,43 +186,70 @@ public class TelaPrincipal extends JFrame {
     private void realizarNovoPedido() {
         List<Produto> disponiveis = sistema.listarProdutosComEstoqueDisponivel();
         if (disponiveis.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Não há produtos com estoque disponível para venda.");
+            JOptionPane.showMessageDialog(this, "Não há produtos com estoque disponível.");
             return;
         }
 
-        // Criar painel de seleção múltipla simples
-        JPanel painel = new JPanel(new GridLayout(0, 1));
-        painel.add(new JLabel("Selecione o produto e informe a quantidade:"));
-        
-        String[] nomes = disponiveis.stream()
-                .map(p -> p.getNome() + " (Disponível: " + p.getQuantidadeEmEstoque() + ")")
-                .toArray(String[]::new);
-        
-        JComboBox<String> comboProdutos = new JComboBox<>(nomes);
-        JTextField txtQtd = new JTextField("1");
-        
-        painel.add(comboProdutos);
-        painel.add(new JLabel("Quantidade:"));
-        painel.add(txtQtd);
+        List<ItemPedido> itensDoPedido = new ArrayList<>();
+        boolean continuarAdicionando = true;
 
-        int result = JOptionPane.showConfirmDialog(this, painel, "Finalizar Venda", JOptionPane.OK_CANCEL_OPTION);
-        
-        if (result == JOptionPane.OK_OPTION) {
+        while (continuarAdicionando) {
+            String[] nomes = disponiveis.stream()
+                    .map(p -> p.getNome() + " (Disponível: " + p.getQuantidadeEmEstoque() + ")")
+                    .toArray(String[]::new);
+
+            JComboBox<String> comboProdutos = new JComboBox<>(nomes);
+            JTextField txtQtd = new JTextField("1");
+
+            JPanel painel = new JPanel(new GridLayout(0, 1));
+            painel.add(new JLabel("Selecione o produto:"));
+            painel.add(comboProdutos);
+            painel.add(new JLabel("Quantidade:"));
+            painel.add(txtQtd);
+
+            int result = JOptionPane.showConfirmDialog(this, painel, "Adicionar Item ao Pedido", JOptionPane.OK_CANCEL_OPTION);
+
+            if (result == JOptionPane.OK_OPTION) {
+                try {
+                    int index = comboProdutos.getSelectedIndex();
+                    Produto pSelecionado = disponiveis.get(index);
+                    int qtd = Integer.parseInt(txtQtd.getText());
+
+                    if (qtd > pSelecionado.getQuantidadeEmEstoque()) {
+                        JOptionPane.showMessageDialog(this, "Quantidade superior ao estoque disponível!");
+                        continue;
+                    }
+
+                    itensDoPedido.add(new ItemPedido(pSelecionado, qtd));
+
+                    int resposta = JOptionPane.showConfirmDialog(this, "Deseja adicionar outro produto a este mesmo pedido?",
+                            "Carrinho de Compras", JOptionPane.YES_NO_OPTION);
+
+                    continuarAdicionando = (resposta == JOptionPane.YES_OPTION);
+
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(this, "Quantidade inválida!");
+                }
+            } else {
+                continuarAdicionando = false;
+            }
+        }
+
+        if (!itensDoPedido.isEmpty()) {
             try {
-                int index = comboProdutos.getSelectedIndex();
-                Produto pSelecionado = disponiveis.get(index);
-                int qtd = Integer.parseInt(txtQtd.getText());
-                
-                List<ItemPedido> itens = new ArrayList<>();
-                itens.add(new ItemPedido(pSelecionado, qtd));
-                
-                Pedido pedido = new Pedido(itens);
+                Pedido pedido = new Pedido(itensDoPedido);
                 sistema.cadastrarPedido(pedido);
-                
-                areaSaida.append("VENDA REALIZADA: " + pedido.getCodigo() + " | Valor: R$ " + pedido.getValorTotal() + "\n");
+
+                areaSaida.append("\nPEDIDO MULTI-ITENS REALIZADO: " + pedido.getCodigo());
+                areaSaida.append("\nItens vendidos:");
+                for (ItemPedido item : itensDoPedido) {
+                    areaSaida.append("\n - " + item.getQuantidade() + "x " + item.getProduto().getNome());
+                }
+                areaSaida.append("\nValor Total: R$ " + String.format("%.2f", pedido.getValorTotal()) + "\n");
+
                 atualizarSaldoLabel();
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "Erro na venda: " + ex.getMessage());
+                JOptionPane.showMessageDialog(this, "Erro ao finalizar pedido: " + ex.getMessage());
             }
         }
     }
@@ -231,7 +264,12 @@ public class TelaPrincipal extends JFrame {
     }
 
     private void exibirFaturamento() {
-        areaSaida.append("\nFaturamento Total Acumulado: R$ " + String.format("%.2f", sistema.calcularFaturamentoTotal()) + "\n");
+        double total = sistema.calcularFaturamentoTotal();
+        double lucro = sistema.calcularLucroTotal();
+        areaSaida.append("\n--- RELATÓRIO FINANCEIRO ---\n");
+        areaSaida.append(String.format("Faturamento Bruto (Vendas): R$ %.2f\n", total));
+        areaSaida.append(String.format("Lucro Líquido Real: R$ %.2f\n", lucro));
+        areaSaida.append("----------------------------\n");
     }
 
     private void ajustarSaldo() {
@@ -267,6 +305,11 @@ public class TelaPrincipal extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new TelaPrincipal().setVisible(true));
+            UIManager.put("OptionPane.yesButtonText", "Sim");
+            UIManager.put("OptionPane.noButtonText", "Não");
+            UIManager.put("OptionPane.cancelButtonText", "Cancelar");
+
+            SwingUtilities.invokeLater(() -> new TelaPrincipal().setVisible(true));
+        }
+
     }
-}

@@ -13,7 +13,6 @@ import modelo.StatusPedido;
 
 public interface SistemaInfinitHub {
 
-    // PRODUTO
     void cadastrarProduto(Produto produto);
 
     void removerProduto(String nome) throws ProdutoNaoEncontradoException;
@@ -46,4 +45,7 @@ public interface SistemaInfinitHub {
     void salvarDados() throws IOException;
 
     void recuperarDados() throws IOException;
+
+    double calcularLucroTotal();
+
 }

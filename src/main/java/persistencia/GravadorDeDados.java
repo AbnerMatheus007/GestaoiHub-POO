@@ -23,8 +23,8 @@ public class GravadorDeDados {
     public void salvarProdutos(Collection<Produto> produtos) throws IOException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(NOME_ARQUIVO_PRODUTOS))) {
             for (Produto p : produtos) {
-                writer.write(p.getNome() + SEPARADOR + p.getCategoria() + SEPARADOR 
-                           + p.getPreco() + SEPARADOR + p.getQuantidadeEmEstoque());
+                writer.write(p.getNome() + SEPARADOR + p.getCategoria() + SEPARADOR
+                        + p.getPrecoVenda() + SEPARADOR + p.getPrecoCusto() + SEPARADOR + p.getQuantidadeEmEstoque());
                 writer.newLine();
             }
         }
@@ -41,7 +41,7 @@ public class GravadorDeDados {
                 if (linha.isBlank()) continue;
                 String[] campos = linha.split(SEPARADOR);
                 Produto p = new Produto(campos[0], CategoriaProduto.valueOf(campos[1]),
-                        Double.parseDouble(campos[2]), Integer.parseInt(campos[3]));
+                        Double.parseDouble(campos[2]), Double.parseDouble(campos[3]), Integer.parseInt(campos[4]));
                 produtos.add(p);
             }
         }
@@ -91,7 +91,7 @@ public class GravadorDeDados {
     private List<ItemPedido> desserializarItens(String serializado, Map<String, Produto> produtos) {
         List<ItemPedido> itens = new ArrayList<>();
         if (serializado == null || serializado.isBlank()) return itens;
-        
+
         String[] pares = serializado.split(SEPARADOR_ITENS);
         for (String par : pares) {
             String[] campos = par.split(SEPARADOR_ITEM_CAMPO);

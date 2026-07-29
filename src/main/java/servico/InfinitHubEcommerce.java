@@ -27,9 +27,17 @@ public class InfinitHubEcommerce implements SistemaInfinitHub {
     private GravadorDeDados gravadorDeDados = new GravadorDeDados();
 
     @Override
+    public double calcularLucroTotal() {
+        return pedidos.values().stream()
+                .flatMap(p -> p.getItens().stream())
+                .mapToDouble(item -> (item.getProduto().getPrecoVenda() - item.getProduto().getPrecoCusto()) * item.getQuantidade())
+                .sum();
+    }
+
+    @Override
     public void cadastrarProduto(Produto produto) {
-        // Chave é o nome em minúsculo para evitar duplicidade por case
         produtos.put(produto.getNome().toLowerCase(), produto);
+        this.saldoAtual -= (produto.getPrecoCusto() * produto.getQuantidadeEmEstoque());
     }
 
     @Override
@@ -157,5 +165,6 @@ public class InfinitHubEcommerce implements SistemaInfinitHub {
         }
         
         this.saldoAtual = gravadorDeDados.recuperarSaldo();
+
     }
 }
