@@ -1,5 +1,0 @@
-P1;Mouse Gamer RGB;PERIFERICO;150.0;20
-P2;Teclado Mecanico ABNT2;PERIFERICO;250.0;15
-P3;Monitor 24 polegadas;ELETRONICO;900.0;8
-P4;Placa de Video RTX;COMPONENTE;3200.0;5
-P5;Caixa de Som Bluetooth;AUDIO;180.0;12
