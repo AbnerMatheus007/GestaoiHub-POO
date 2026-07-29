@@ -1,0 +1,65 @@
+classDiagram
+    class SistemaInfinitHub {
+        <<interface>>
+        +cadastrarProduto(produto)
+        +removerProduto(nome)
+        +pesquisarProdutoPorNome(nome)
+        +listarTodosProdutos()
+        +pesquisarProdutosPorCategoria(categoria)
+        +listarProdutosComEstoqueDisponivel()
+        +reporEstoque(nome, qtd, custo)
+        +cadastrarPedido(pedido)
+        +removerPedido(codigo)
+        +listarPedidosPorStatus(status)
+        +getSaldoAtual()
+        +setSaldoAtual(saldo)
+        +calcularFaturamentoTotal()
+        +salvarDados()
+        +recuperarDados()
+    }
+
+    class InfinitHubEcommerce {
+        -Map produtos
+        -Map pedidos
+        -double saldoAtual
+        -GravadorDeDados gravadorDeDados
+    }
+
+    class GravadorDeDados {
+        +salvarProdutos(produtos)
+        +recuperarProdutos()
+        +salvarPedidos(pedidos)
+        +recuperarPedidos()
+        +salvarSaldo(saldo)
+        +recuperarSaldo()
+    }
+
+    class Produto {
+        -String nome
+        -double preco
+        -int quantidadeEmEstoque
+        +possuiEstoqueDisponivel(qtd)
+        +baixarEstoque(qtd)
+        +reporEstoque(qtd)
+    }
+
+    class Pedido {
+        -String codigo
+        -List itens
+        -LocalDateTime dataHoraPedido
+        -StatusPedido status
+        +getValorTotal()
+    }
+
+    class ItemPedido {
+        -Produto produto
+        -int quantidade
+        +getSubtotal()
+    }
+
+    SistemaInfinitHub <|.. InfinitHubEcommerce
+    InfinitHubEcommerce --> GravadorDeDados
+    InfinitHubEcommerce "1" *-- "*" Produto
+    InfinitHubEcommerce "1" *-- "*" Pedido
+    Pedido "1" *-- "1..*" ItemPedido
+    ItemPedido "1" --> "1" Produto

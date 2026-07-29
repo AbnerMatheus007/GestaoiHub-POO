@@ -1,0 +1,82 @@
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import excecoes.EstoqueInsuficienteException;
+import excecoes.PedidoNaoEncontradoException;
+import excecoes.ProdutoNaoEncontradoException;
+import modelo.CategoriaProduto;
+import modelo.ItemPedido;
+import modelo.Pedido;
+import modelo.Produto;
+import servico.InfinitHubEcommerce;
+import servico.SistemaInfinitHub;
+
+public class InfinitHubEcommerceTest {
+
+    private SistemaInfinitHub sistema;
+
+    @BeforeEach
+    public void configurar() {
+        sistema = new InfinitHubEcommerce();
+    }
+
+    @Test
+    public void testCadastrarEPesquisarProdutoPorNome() throws ProdutoNaoEncontradoException {
+        Produto p = new Produto("Mouse Gamer", CategoriaProduto.PERIFERICO, 150.0, 10);
+        sistema.cadastrarProduto(p);
+        Produto encontrado = sistema.pesquisarProdutoPorNome("Mouse Gamer");
+        assertEquals(150.0, encontrado.getPreco());
+    }
+
+    @Test
+    public void testRemoverProdutoELancarExcecao() {
+        assertThrows(ProdutoNaoEncontradoException.class, () -> {
+            sistema.removerProduto("Produto Inexistente");
+        });
+    }
+
+    @Test
+    public void testReporEstoqueEDescontarSaldo() throws ProdutoNaoEncontradoException {
+        sistema.setSaldoAtual(100.0);
+        Produto p = new Produto("Fone", CategoriaProduto.AUDIO, 50.0, 0);
+        sistema.cadastrarProduto(p);
+        sistema.reporEstoque("Fone", 2, 10.0); // Custo 20.0
+        assertEquals(2, sistema.pesquisarProdutoPorNome("Fone").getQuantidadeEmEstoque());
+        assertEquals(80.0, sistema.getSaldoAtual());
+    }
+
+    @Test
+    public void testVendaEAcrescimoNoSaldo() throws ProdutoNaoEncontradoException, EstoqueInsuficienteException {
+        sistema.setSaldoAtual(0.0);
+        Produto p = new Produto("Teclado", CategoriaProduto.PERIFERICO, 100.0, 5);
+        sistema.cadastrarProduto(p);
+        
+        List<ItemPedido> itens = new ArrayList<>();
+        itens.add(new ItemPedido(p, 1));
+        Pedido ped = new Pedido(itens);
+        sistema.cadastrarPedido(ped);
+        
+        assertEquals(100.0, sistema.getSaldoAtual());
+        assertEquals(4, sistema.pesquisarProdutoPorNome("Teclado").getQuantidadeEmEstoque());
+    }
+
+    @Test
+    public void testPersistencia() throws IOException, ProdutoNaoEncontradoException {
+        sistema.setSaldoAtual(250.0);
+        sistema.cadastrarProduto(new Produto("Monitor", CategoriaProduto.ELETRONICO, 900.0, 2));
+        sistema.salvarDados();
+        
+        SistemaInfinitHub novo = new InfinitHubEcommerce();
+        novo.recuperarDados();
+        assertEquals(250.0, novo.getSaldoAtual());
+        assertEquals("Monitor", novo.pesquisarProdutoPorNome("Monitor").getNome());
+    }
+}
