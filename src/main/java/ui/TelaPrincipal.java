@@ -5,10 +5,8 @@ import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-
 import excecoes.EstoqueInsuficienteException;
 import excecoes.PedidoNaoEncontradoException;
 import excecoes.ProdutoNaoEncontradoException;
@@ -138,7 +136,6 @@ public class TelaPrincipal extends JFrame {
             double precoCusto = Double.parseDouble(precoCustoStr);
             int estoque = Integer.parseInt(estoqueStr);
 
-            // Passa os dois preços para o novo construtor do Produto
             sistema.cadastrarProduto(new Produto(nome, CategoriaProduto.valueOf(categoriaStr), precoVenda, precoCusto, estoque));
 
             areaSaida.append("Produto '" + nome + "' cadastrado e investimento descontado do saldo.\n");

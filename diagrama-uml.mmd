@@ -14,6 +14,7 @@ classDiagram
         +getSaldoAtual()
         +setSaldoAtual(saldo)
         +calcularFaturamentoTotal()
+        +calcularLucroTotal()
         +salvarDados()
         +recuperarDados()
     }
@@ -22,43 +23,22 @@ classDiagram
         -Map produtos
         -Map pedidos
         -double saldoAtual
-        -GravadorDeDados gravadorDeDados
-    }
-
-    class GravadorDeDados {
-        +salvarProdutos(produtos)
-        +recuperarProdutos()
-        +salvarPedidos(pedidos)
-        +recuperarPedidos()
-        +salvarSaldo(saldo)
-        +recuperarSaldo()
     }
 
     class Produto {
         -String nome
-        -double preco
+        -double precoVenda
+        -double precoCusto
         -int quantidadeEmEstoque
-        +possuiEstoqueDisponivel(qtd)
-        +baixarEstoque(qtd)
-        +reporEstoque(qtd)
     }
 
     class Pedido {
         -String codigo
         -List itens
         -LocalDateTime dataHoraPedido
-        -StatusPedido status
-        +getValorTotal()
-    }
-
-    class ItemPedido {
-        -Produto produto
-        -int quantidade
-        +getSubtotal()
     }
 
     SistemaInfinitHub <|.. InfinitHubEcommerce
-    InfinitHubEcommerce --> GravadorDeDados
     InfinitHubEcommerce "1" *-- "*" Produto
     InfinitHubEcommerce "1" *-- "*" Pedido
     Pedido "1" *-- "1..*" ItemPedido
