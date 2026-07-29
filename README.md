@@ -1,4 +1,4 @@
-# Infinit Hub - Gestão de E-commerce (POO)
+# Infinit Hub - Gestão de loja (POO)
 
 Este projeto consiste em um sistema de gestão para uma loja online, desenvolvido para a disciplina de Programação Orientada a Objetos (POO). O sistema permite o controle de estoque, realização de pedidos e gestão financeira.
 
