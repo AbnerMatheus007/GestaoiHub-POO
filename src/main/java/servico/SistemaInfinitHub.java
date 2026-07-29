@@ -11,10 +11,6 @@ import modelo.Pedido;
 import modelo.Produto;
 import modelo.StatusPedido;
 
-/**
- * Interface (Façade) simplificada para a loja online Infinit Hub.
- * O nome do produto é o identificador único.
- */
 public interface SistemaInfinitHub {
 
     // PRODUTO

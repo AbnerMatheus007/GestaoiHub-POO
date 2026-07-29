@@ -10,9 +10,6 @@ import modelo.Pedido;
 import modelo.Produto;
 import modelo.StatusPedido;
 
-/**
- * Persistência de dados baseada em Nomes de Produtos.
- */
 public class GravadorDeDados {
 
     public static final String NOME_ARQUIVO_PRODUTOS = "produtos.txt";

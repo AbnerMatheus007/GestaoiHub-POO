@@ -124,7 +124,7 @@ public class TelaPrincipal extends JFrame {
         String nome = JOptionPane.showInputDialog(this, "Nome do Produto:");
         if (nome == null || nome.isBlank()) return;
         
-        String[] categorias = {"PERIFÉRICO", "ELETRÔNICO", "COMPONENTE", "ACESSORIO", "AUDIO"};
+        String[] categorias = {"PERIFERICO", "ELETRONICO", "COMPONENTE", "ACESSORIO", "AUDIO"};
         String categoriaStr = (String) JOptionPane.showInputDialog(this, "Selecione a Categoria:", "Categoria", 
                                 JOptionPane.QUESTION_MESSAGE, null, categorias, categorias[0]);
         

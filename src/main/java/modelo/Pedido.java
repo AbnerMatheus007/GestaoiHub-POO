@@ -4,10 +4,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-/**
- * Representa um pedido de compra na loja online.
- * O identificador do pedido é gerado automaticamente baseado no timestamp.
- */
 public class Pedido {
 
     private String codigo;

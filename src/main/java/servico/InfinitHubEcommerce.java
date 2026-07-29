@@ -18,9 +18,6 @@ import modelo.Produto;
 import modelo.StatusPedido;
 import persistencia.GravadorDeDados;
 
-/**
- * Implementação do sistema Infinit Hub usando o Nome do Produto como chave.
- */
 public class InfinitHubEcommerce implements SistemaInfinitHub {
 
     private Map<String, Produto> produtos = new HashMap<>();

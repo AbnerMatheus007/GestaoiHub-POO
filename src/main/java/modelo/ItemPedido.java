@@ -29,9 +29,6 @@ public class ItemPedido {
         this.quantidade = quantidade;
     }
 
-    /**
-     * Subtotal do item (preço unitário do produto x quantidade).
-     */
     public double getSubtotal() {
         return produto.getPreco() * quantidade;
     }
