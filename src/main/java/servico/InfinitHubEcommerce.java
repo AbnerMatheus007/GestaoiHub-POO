@@ -85,7 +85,6 @@ public class InfinitHubEcommerce implements SistemaInfinitHub {
 
     @Override
     public void cadastrarPedido(Pedido pedido) throws EstoqueInsuficienteException, ProdutoNaoEncontradoException {
-        // Valida estoque
         for (ItemPedido item : pedido.getItens()) {
             Produto p = pesquisarProdutoPorNome(item.getProduto().getNome());
             if (!p.possuiEstoqueDisponivel(item.getQuantidade())) {
@@ -93,7 +92,6 @@ public class InfinitHubEcommerce implements SistemaInfinitHub {
             }
         }
 
-        // Processa baixa e saldo
         for (ItemPedido item : pedido.getItens()) {
             Produto p = produtos.get(item.getProduto().getNome().toLowerCase());
             p.baixarEstoque(item.getQuantidade());

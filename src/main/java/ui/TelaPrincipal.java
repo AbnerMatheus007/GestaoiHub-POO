@@ -128,7 +128,7 @@ public class TelaPrincipal extends JFrame {
                 JOptionPane.QUESTION_MESSAGE, null, categorias, categorias[0]);
 
         String precoVendaStr = JOptionPane.showInputDialog(this, "Preço de Venda (R$):");
-        String precoCustoStr = JOptionPane.showInputDialog(this, "Preço de Custo/Compra (R$):"); // Nova pergunta
+        String precoCustoStr = JOptionPane.showInputDialog(this, "Preço de Custo/Compra (R$):");
         String estoqueStr = JOptionPane.showInputDialog(this, "Estoque Inicial:");
 
         try {
@@ -188,8 +188,6 @@ public class TelaPrincipal extends JFrame {
             return;
         }
 
-        // Criamos um controle de estoque temporário apenas para esta janela
-        // Nome do Produto -> Quantidade Disponível
         Map<String, Integer> estoqueTemporario = new java.util.HashMap<>();
         for (Produto p : produtosOriginais) {
             estoqueTemporario.put(p.getNome(), p.getQuantidadeEmEstoque());
@@ -199,7 +197,6 @@ public class TelaPrincipal extends JFrame {
         boolean continuarAdicionando = true;
 
         while (continuarAdicionando) {
-            // Filtramos para mostrar apenas o que ainda tem estoque no nosso controle temporário
             List<Produto> aindaDisponiveis = produtosOriginais.stream()
                     .filter(p -> estoqueTemporario.get(p.getNome()) > 0)
                     .collect(java.util.stream.Collectors.toList());
@@ -235,10 +232,8 @@ public class TelaPrincipal extends JFrame {
                         continue;
                     }
 
-                    // Atualiza apenas o nosso controle temporário
                     estoqueTemporario.put(pOriginal.getNome(), qtdDisponivel - qtdPedida);
 
-                    // Adiciona à lista do pedido (usando o objeto original e a quantidade pedida)
                     itensDoPedido.add(new ItemPedido(pOriginal, qtdPedida));
 
                     int resposta = JOptionPane.showConfirmDialog(this, "Deseja adicionar outro produto?",
@@ -249,8 +244,6 @@ public class TelaPrincipal extends JFrame {
                     JOptionPane.showMessageDialog(this, "Por favor, insira um número válido.");
                 }
             } else {
-                // Se cancelar, simplesmente limpamos a lista e saímos.
-                // Os objetos originais nunca foram mexidos!
                 itensDoPedido.clear();
                 break;
             }
@@ -259,10 +252,10 @@ public class TelaPrincipal extends JFrame {
         if (!itensDoPedido.isEmpty()) {
             try {
                 Pedido pedido = new Pedido(itensDoPedido);
-                sistema.cadastrarPedido(pedido); // Aqui sim o estoque real é baixado
+                sistema.cadastrarPedido(pedido);
 
-                areaSaida.append("\n✅ VENDA FINALIZADA: " + pedido.getCodigo());
-                areaSaida.append("\n💰 Total: R$ " + String.format("%.2f", pedido.getValorTotal()) + "\n");
+                areaSaida.append("\nVENDA FINALIZADA: " + pedido.getCodigo());
+                areaSaida.append("\nTotal: R$ " + String.format("%.2f", pedido.getValorTotal()) + "\n");
                 atualizarSaldoLabel();
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this, "Erro ao finalizar: " + ex.getMessage());

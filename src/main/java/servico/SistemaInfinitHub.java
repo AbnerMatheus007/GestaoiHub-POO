@@ -27,21 +27,18 @@ public interface SistemaInfinitHub {
 
     void reporEstoque(String nome, int quantidade, double custoUnitario) throws ProdutoNaoEncontradoException;
 
-    // PEDIDO
     void cadastrarPedido(Pedido pedido) throws EstoqueInsuficienteException, ProdutoNaoEncontradoException;
 
     void removerPedido(String codigo) throws PedidoNaoEncontradoException;
 
     List<Pedido> listarPedidosPorStatus(StatusPedido status);
 
-    // SALDO E GESTÃO
     double getSaldoAtual();
 
     void setSaldoAtual(double saldo);
 
     double calcularFaturamentoTotal();
 
-    // PERSISTÊNCIA
     void salvarDados() throws IOException;
 
     void recuperarDados() throws IOException;

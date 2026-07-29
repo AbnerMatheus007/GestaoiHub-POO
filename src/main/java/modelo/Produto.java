@@ -6,7 +6,7 @@ public class Produto {
     private String nome;
     private CategoriaProduto categoria;
     private double precoVenda;
-    private double precoCusto; // Novo campo
+    private double precoCusto;
     private int quantidadeEmEstoque;
 
     public Produto(String nome, CategoriaProduto categoria, double precoVenda, double precoCusto, int quantidadeEmEstoque) {
@@ -17,7 +17,6 @@ public class Produto {
         this.quantidadeEmEstoque = quantidadeEmEstoque;
     }
 
-    // Getters e Setters
     public String getNome() { return nome; }
     public double getPrecoVenda() { return precoVenda; }
     public double getPrecoCusto() { return precoCusto; }

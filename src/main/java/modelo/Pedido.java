@@ -17,8 +17,7 @@ public class Pedido {
         this.itens = itens;
         this.status = StatusPedido.PAGO;
     }
-    
-    // Construtor para recuperação de dados
+
     public Pedido(String codigo, List<ItemPedido> itens, LocalDateTime dataHora, StatusPedido status) {
         this.codigo = codigo;
         this.itens = itens;
