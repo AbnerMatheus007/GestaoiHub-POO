@@ -1,1 +1,0 @@
-Monitor;ELETRONICO;900.0;500.0;2

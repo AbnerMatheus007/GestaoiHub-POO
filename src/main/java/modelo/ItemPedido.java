@@ -1,8 +1,5 @@
 package modelo;
 
-/**
- * Representa um item dentro de um Pedido: um Produto e a quantidade comprada.
- */
 public class ItemPedido {
 
     private Produto produto;
