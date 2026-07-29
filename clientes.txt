@@ -1,2 +1,0 @@
-C1;Luiza Ferreira;222.222.222-22;83999990000;luiza@email.com;Rua das Flores, 100
-C2;Joao Pedro Alves;333.333.333-33;83988887777;joao@email.com;Av. Brasil, 500
