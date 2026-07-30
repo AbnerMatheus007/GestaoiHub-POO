@@ -1,23 +1,23 @@
 digraph InfinitHubUML {
-    graph [fontname="Helvetica", rankdir=TB, splines=polyline, nodesep=0.6, ranksep=0.9, bgcolor="white"];
+    graph [fontname="Helvetica", rankdir=TB, splines=polyline, nodesep=0.7, ranksep=0.9, bgcolor="white"];
     node [shape=record, fontname="Helvetica", fontsize=10, margin="0.12,0.10"];
     edge [fontname="Helvetica", fontsize=9];
 
-    Interface [label="{«interface»\nSistemaInfinitHub|+ cadastrarProduto(produto)\l+ removerProduto(id)\l+ pesquisarProdutoPorId(id)\l+ pesquisarProdutosPorNome(nome)\l+ pesquisarProdutosPorCategoria(categoria)\l+ listarProdutosComEstoqueDisponivel()\l+ reporEstoque(id, qtd, custo)\l+ cadastrarPedido(pedido)\l+ removerPedido(id)\l+ listarPedidosPorStatus(status)\l+ getSaldoAtual()\l+ setSaldoAtual(saldo)\l+ calcularFaturamentoTotal()\l+ salvarDados()\l+ recuperarDados()\l}"];
+    Interface [label="{«interface»\nSistemaInfinitHub|+ cadastrarProduto(produto)\l+ removerProduto(nome)\l+ pesquisarProdutoPorNome(nome)\l+ listarTodosProdutos()\l+ pesquisarProdutosPorCategoria(categoria)\l+ listarProdutosComEstoqueDisponivel()\l+ reporEstoque(nome, qtd, custo)\l+ cadastrarPedido(pedido)\l+ removerPedido(codigo)\l+ listarPedidosPorStatus(status)\l+ getSaldoAtual()\l+ setSaldoAtual(saldo)\l+ calcularFaturamentoTotal()\l+ calcularLucroTotal()\l+ salvarDados()\l+ recuperarDados()\l}"];
 
     Impl [label="{InfinitHubEcommerce|- produtos: Map\<String,Produto\>\l- pedidos: Map\<String,Pedido\>\l- saldoAtual: double\l- gravadorDeDados: GravadorDeDados\l|(implementa todos os métodos\nde SistemaInfinitHub, usando\nStreams em pesquisas/cálculos)\l}"];
 
     Gravador [label="{GravadorDeDados|- SEPARADOR: String\l|+ salvarProdutos(produtos)\l+ recuperarProdutos()\l+ salvarPedidos(pedidos)\l+ recuperarPedidos(...)\l+ salvarSaldo(saldo)\l+ recuperarSaldo()\l(métodos lançam IOException)\l}"];
 
-    Produto [label="{Produto|- id: String\l- nome: String\l- categoria: CategoriaProduto\l- preco: double\l- quantidadeEmEstoque: int\l|+ possuiEstoqueDisponivel(qtd)\l+ baixarEstoque(qtd)\l+ reporEstoque(qtd)\l}"];
+    Produto [label="{Produto|- nome: String\l- categoria: CategoriaProduto\l- precoVenda: double\l- precoCusto: double\l- quantidadeEmEstoque: int\l|+ possuiEstoqueDisponivel(qtd)\l+ baixarEstoque(qtd)\l+ reporEstoque(qtd)\l}"];
 
     ItemPedido [label="{ItemPedido|- produto: Produto\l- quantidade: int\l|+ getSubtotal()\l}"];
 
-    Pedido [label="{Pedido|- id: String\l- itens: List\<ItemPedido\>\l- dataPedido: LocalDate\l- status: StatusPedido\l|+ getValorTotal()\l}"];
+    Pedido [label="{Pedido|- codigo: String\l- itens: List\<ItemPedido\>\l- dataHoraPedido: LocalDateTime\l- status: StatusPedido\l|+ getValorTotal()\l}"];
 
     CategoriaProduto [label="{«enumeration»\nCategoriaProduto|PERIFERICO\lELETRONICO\lCOMPONENTE\lACESSORIO\lAUDIO\l}"];
 
-    StatusPedido [label="{«enumeration»\nStatusPedido|AGUARDANDO_PAGAMENTO\lPAGO\lCANCELADO\l}"];
+    StatusPedido [label="{«enumeration»\nStatusPedido|AGUARDANDO_PAGAMENTO\lPAGO\lENVIADO\lENTREGUE\lCANCELADO\l}"];
 
     Excecoes [label="{«exceptions»|ProdutoNaoEncontradoException\lPedidoNaoEncontradoException\lEstoqueInsuficienteException\l}", shape=note, fontsize=9];
 

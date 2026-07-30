@@ -16,6 +16,7 @@ import modelo.CategoriaProduto;
 import modelo.ItemPedido;
 import modelo.Pedido;
 import modelo.Produto;
+import modelo.StatusPedido;
 import servico.InfinitHubEcommerce;
 import servico.SistemaInfinitHub;
 
@@ -84,5 +85,47 @@ public class InfinitHubEcommerceTest {
 
         assertEquals(1000.0, novo.getSaldoAtual());
         assertEquals("Monitor", novo.pesquisarProdutoPorNome("Monitor").getNome());
+    }
+
+    @Test
+    public void testListarTodosPesquisarPorCategoriaEComEstoqueDisponivel() {
+        Produto mouse = new Produto("Mouse Gamer", CategoriaProduto.PERIFERICO, 150.0, 80.0, 10);
+        Produto monitor = new Produto("Monitor 24pol", CategoriaProduto.ELETRONICO, 900.0, 500.0, 0);
+        sistema.cadastrarProduto(mouse);
+        sistema.cadastrarProduto(monitor);
+
+        List<Produto> todos = sistema.listarTodosProdutos();
+        assertEquals(2, todos.size());
+
+        List<Produto> perifericos = sistema.pesquisarProdutosPorCategoria(CategoriaProduto.PERIFERICO);
+        assertEquals(1, perifericos.size());
+        assertEquals("Mouse Gamer", perifericos.get(0).getNome());
+
+        List<Produto> comEstoque = sistema.listarProdutosComEstoqueDisponivel();
+        assertEquals(1, comEstoque.size());
+        assertEquals("Mouse Gamer", comEstoque.get(0).getNome());
+    }
+
+    @Test
+    public void testListarPedidosPorStatusERemoverPedido() throws ProdutoNaoEncontradoException,
+            EstoqueInsuficienteException, PedidoNaoEncontradoException {
+
+        Produto p = new Produto("Headset", CategoriaProduto.AUDIO, 300.0, 150.0, 5);
+        sistema.cadastrarProduto(p);
+
+        List<ItemPedido> itens = new ArrayList<>();
+        itens.add(new ItemPedido(p, 2));
+        Pedido pedido = new Pedido(itens);
+        sistema.cadastrarPedido(pedido);
+
+        List<Pedido> pagos = sistema.listarPedidosPorStatus(StatusPedido.PAGO);
+        assertEquals(1, pagos.size());
+        assertEquals(3, sistema.pesquisarProdutoPorNome("Headset").getQuantidadeEmEstoque());
+
+        sistema.removerPedido(pedido.getCodigo());
+
+        assertTrue(sistema.listarPedidosPorStatus(StatusPedido.PAGO).isEmpty());
+        assertEquals(5, sistema.pesquisarProdutoPorNome("Headset").getQuantidadeEmEstoque());
+        assertThrows(PedidoNaoEncontradoException.class, () -> sistema.removerPedido(pedido.getCodigo()));
     }
 }

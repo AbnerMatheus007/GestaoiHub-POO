@@ -37,6 +37,7 @@ public class TelaPrincipal extends JFrame {
         setSize(1000, 700);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
+        setJMenuBar(criarBarraDeMenu());
 
         JPanel painelLateral = new JPanel();
         painelLateral.setLayout(new GridLayout(12, 1, 5, 5));
@@ -105,6 +106,51 @@ public class TelaPrincipal extends JFrame {
         atualizarSaldoLabel();
     }
 
+    private JMenuBar criarBarraDeMenu() {
+        JMenuBar menuBar = new JMenuBar();
+
+        JMenu menuProduto = new JMenu("Produto");
+        JMenuItem miCadastrarProduto = new JMenuItem("Cadastrar Produto");
+        JMenuItem miReporEstoque = new JMenuItem("Repor Estoque");
+        JMenuItem miListarProdutos = new JMenuItem("Catálogo de Produtos");
+        miCadastrarProduto.addActionListener(e -> cadastrarProduto());
+        miReporEstoque.addActionListener(e -> reporEstoque());
+        miListarProdutos.addActionListener(e -> listarProdutos());
+        menuProduto.add(miCadastrarProduto);
+        menuProduto.add(miReporEstoque);
+        menuProduto.add(miListarProdutos);
+
+        JMenu menuPedido = new JMenu("Pedido");
+        JMenuItem miNovoPedido = new JMenuItem("Novo Pedido");
+        JMenuItem miListarPedidos = new JMenuItem("Histórico de Pedidos");
+        JMenuItem miFaturamento = new JMenuItem("Faturamento e Lucro");
+        miNovoPedido.addActionListener(e -> realizarNovoPedido());
+        miListarPedidos.addActionListener(e -> listarPedidos());
+        miFaturamento.addActionListener(e -> exibirFaturamento());
+        menuPedido.add(miNovoPedido);
+        menuPedido.add(miListarPedidos);
+        menuPedido.add(miFaturamento);
+
+        JMenu menuCaixa = new JMenu("Caixa");
+        JMenuItem miAjustarSaldo = new JMenuItem("Ajustar Saldo");
+        miAjustarSaldo.addActionListener(e -> ajustarSaldo());
+        menuCaixa.add(miAjustarSaldo);
+
+        JMenu menuArquivo = new JMenu("Arquivo");
+        JMenuItem miSalvar = new JMenuItem("Salvar Dados");
+        JMenuItem miCarregar = new JMenuItem("Recuperar Dados");
+        miSalvar.addActionListener(e -> salvarDados());
+        miCarregar.addActionListener(e -> recuperarDados());
+        menuArquivo.add(miSalvar);
+        menuArquivo.add(miCarregar);
+
+        menuBar.add(menuProduto);
+        menuBar.add(menuPedido);
+        menuBar.add(menuCaixa);
+        menuBar.add(menuArquivo);
+        return menuBar;
+    }
+
     private JButton criarBotaoMenu(String texto) {
         JButton btn = new JButton(texto);
         btn.setFocusPainted(false);
@@ -153,9 +199,9 @@ public class TelaPrincipal extends JFrame {
         }
 
         String[] nomes = todos.stream().map(Produto::getNome).toArray(String[]::new);
-        String nomeSelecionado = (String) JOptionPane.showInputDialog(this, "Selecione o produto para repor:", 
-                                   "Reposição", JOptionPane.QUESTION_MESSAGE, null, nomes, nomes[0]);
-        
+        String nomeSelecionado = (String) JOptionPane.showInputDialog(this, "Selecione o produto para repor:",
+                "Reposição", JOptionPane.QUESTION_MESSAGE, null, nomes, nomes[0]);
+
         if (nomeSelecionado == null) return;
 
         String qtdStr = JOptionPane.showInputDialog(this, "Quantidade comprada:");
@@ -315,11 +361,11 @@ public class TelaPrincipal extends JFrame {
     }
 
     public static void main(String[] args) {
-            UIManager.put("OptionPane.yesButtonText", "Sim");
-            UIManager.put("OptionPane.noButtonText", "Não");
-            UIManager.put("OptionPane.cancelButtonText", "Cancelar");
+        UIManager.put("OptionPane.yesButtonText", "Sim");
+        UIManager.put("OptionPane.noButtonText", "Não");
+        UIManager.put("OptionPane.cancelButtonText", "Cancelar");
 
-            SwingUtilities.invokeLater(() -> new TelaPrincipal().setVisible(true));
-        }
-
+        SwingUtilities.invokeLater(() -> new TelaPrincipal().setVisible(true));
     }
+
+}
