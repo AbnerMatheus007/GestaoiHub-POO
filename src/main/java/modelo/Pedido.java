@@ -1,10 +1,13 @@
 package modelo;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-public class Pedido {
+public class Pedido implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private String codigo;
     private List<ItemPedido> itens;
@@ -53,10 +56,10 @@ public class Pedido {
 
     @Override
     public String toString() {
-        return String.format("[%s] %s | Total: R$ %.2f | Itens: %d", 
-            codigo, 
-            dataHoraPedido.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")), 
-            getValorTotal(), 
-            itens.size());
+        return String.format("[%s] %s | Total: R$ %.2f | Itens: %d",
+                codigo,
+                dataHoraPedido.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
+                getValorTotal(),
+                itens.size());
     }
 }

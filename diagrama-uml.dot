@@ -7,13 +7,13 @@ digraph InfinitHubUML {
 
     Impl [label="{InfinitHubEcommerce|- produtos: Map\<String,Produto\>\l- pedidos: Map\<String,Pedido\>\l- saldoAtual: double\l- gravadorDeDados: GravadorDeDados\l|(implementa todos os métodos\nde SistemaInfinitHub, usando\nStreams em pesquisas/cálculos)\l}"];
 
-    Gravador [label="{GravadorDeDados|- SEPARADOR: String\l|+ salvarProdutos(produtos)\l+ recuperarProdutos()\l+ salvarPedidos(pedidos)\l+ recuperarPedidos(...)\l+ salvarSaldo(saldo)\l+ recuperarSaldo()\l(métodos lançam IOException)\l}"];
+    Gravador [label="{GravadorDeDados|- NOME_ARQUIVO_PRODUTOS: String = \"produtos.dat\"\l- NOME_ARQUIVO_PEDIDOS: String = \"pedidos.dat\"\l- NOME_ARQUIVO_SALDO: String = \"saldo.dat\"\l|+ salvarProdutos(produtos)\l+ recuperarProdutos()\l+ salvarPedidos(pedidos)\l+ recuperarPedidos(...)\l+ salvarSaldo(saldo)\l+ recuperarSaldo()\l(via ObjectOutputStream/\nObjectInputStream — métodos\nlançam IOException)\l}"];
 
-    Produto [label="{Produto|- nome: String\l- categoria: CategoriaProduto\l- precoVenda: double\l- precoCusto: double\l- quantidadeEmEstoque: int\l|+ possuiEstoqueDisponivel(qtd)\l+ baixarEstoque(qtd)\l+ reporEstoque(qtd)\l}"];
+    Produto [label="{Produto\n«Serializable»|- nome: String\l- categoria: CategoriaProduto\l- precoVenda: double\l- precoCusto: double\l- quantidadeEmEstoque: int\l|+ possuiEstoqueDisponivel(qtd)\l+ baixarEstoque(qtd)\l+ reporEstoque(qtd)\l}"];
 
-    ItemPedido [label="{ItemPedido|- produto: Produto\l- quantidade: int\l|+ getSubtotal()\l}"];
+    ItemPedido [label="{ItemPedido\n«Serializable»|- produto: Produto\l- quantidade: int\l|+ getSubtotal()\l}"];
 
-    Pedido [label="{Pedido|- codigo: String\l- itens: List\<ItemPedido\>\l- dataHoraPedido: LocalDateTime\l- status: StatusPedido\l|+ getValorTotal()\l}"];
+    Pedido [label="{Pedido\n«Serializable»|- codigo: String\l- itens: List\<ItemPedido\>\l- dataHoraPedido: LocalDateTime\l- status: StatusPedido\l|+ getValorTotal()\l}"];
 
     CategoriaProduto [label="{«enumeration»\nCategoriaProduto|PERIFERICO\lELETRONICO\lCOMPONENTE\lACESSORIO\lAUDIO\l}"];
 

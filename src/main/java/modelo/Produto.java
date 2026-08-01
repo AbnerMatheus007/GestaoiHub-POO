@@ -1,8 +1,12 @@
 package modelo;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Produto {
+public class Produto implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
     private String nome;
     private CategoriaProduto categoria;
     private double precoVenda;

@@ -23,8 +23,8 @@ O sistema implementa o padrão **Façade** através da interface `SistemaInfinit
 11. **getSaldoAtual / setSaldoAtual:** Gestão do capital em caixa (inclui correção manual).
 12. **calcularFaturamentoTotal:** Soma de todos os pedidos realizados usando **Streams (mapToDouble + sum)**.
 13. **calcularLucroTotal:** Soma o lucro (venda − custo) de cada item vendido usando **Streams (flatMap + mapToDouble + sum)**.
-14. **salvarDados:** Persistência em arquivos `.txt` via classe `GravadorDeDados`.
-15. **recuperarDados:** Carregamento do estado anterior do sistema.
+14. **salvarDados:** Persistência via serialização de objetos (`ObjectOutputStream`) através da classe `GravadorDeDados`.
+15. **recuperarDados:** Carregamento do estado anterior do sistema, via desserialização de objetos (`ObjectInputStream`).
 
 ## Requisitos Técnicos Atendidos
 
@@ -32,7 +32,7 @@ O sistema implementa o padrão **Façade** através da interface `SistemaInfinit
 - **Coleções:** Uso de `HashMap` para armazenamento de dados em memória.
 - **Streams e Lambda:** Implementados em diversos pontos para processamento de dados (filter, map, mapToDouble, flatMap).
 - **Exceções:** Tratamento robusto de erros de negócio (`ProdutoNaoEncontradoException`, `PedidoNaoEncontradoException`, `EstoqueInsuficienteException`).
-- **Persistência:** Gravação/Leitura em arquivos de texto (`produtos.txt`, `pedidos.txt`, `saldo.txt`), com métodos que lançam `IOException`.
+- **Persistência:** Gravação e recuperação de **objetos** via serialização nativa do Java (`ObjectOutputStream`/`ObjectInputStream`), em `produtos.dat`, `pedidos.dat` e `saldo.dat`. As classes `Produto`, `Pedido` e `ItemPedido` implementam `Serializable`. Todos os métodos usam try-with-resources e lançam `IOException`.
 - **Interface Gráfica:** Desenvolvida em **Swing**, com barra de menu (`JMenuBar`) e painel lateral com atalhos.
 - **Testes Automatizados:** 7 casos de teste no JUnit 5, exercitando todos os métodos da interface.
 
