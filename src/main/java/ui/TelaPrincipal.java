@@ -344,7 +344,7 @@ public class TelaPrincipal extends JFrame {
     private void salvarDados() {
         try {
             sistema.salvarDados();
-            areaSaida.append("Dados salvos nos arquivos .txt\n");
+            areaSaida.append("Dados salvos nos arquivos .dat\n");
         } catch (IOException ex) {
             JOptionPane.showMessageDialog(this, "Erro ao salvar.");
         }
